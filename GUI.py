@@ -305,27 +305,22 @@ class Data():
             plt.axvline(x=x[self.normalize_lower_bound], ymin=0, ymax=1, hold=None, color='r', linestyle='--')
             plt.axvline(x=x[self.normalize_upper_bound], ymin=0, ymax=1, hold=None, color='r', linestyle='--')
 
-program_directory = os.getcwd()
-default_dir = os.path.dirname(program_directory)
-trial = Trial(default_dir)
-trial.plot_data()
-
 
 # Create Functions For buttons
 def save():
-    trial.save_data()
+    app.trial.save_data()
     return
 
 
 def next_sample():
-    trial.select_next_sample()
-    app.sampleNum_label.config(text='Sample '+trial.current_sample().sample_num)
+    app.trial.select_next_sample()
+    app.sampleNum_label.config(text='Sample '+app.trial.current_sample().sample_num)
     return
 
 
 def previous_sample():
-    trial.select_previous_sample()
-    app.sampleNum_label.config(text='Sample '+trial.current_sample().sample_num)
+    app.trial.select_previous_sample()
+    app.sampleNum_label.config(text='Sample '+app.trial.current_sample().sample_num)
     return
 
 
@@ -333,26 +328,36 @@ def update_bounds():
     # Try to plot with new bounds
     lower_bound = int(app.lowerSearchBound_entry.get())
     upper_bound = int(app.upperSearchBound_entry.get())
-    trial.current_sample().change_normalize_bounds(lower_bound, upper_bound)
-    trial.plot_data()
+    app.trial.current_sample().change_normalize_bounds(lower_bound, upper_bound)
+    app.trial.plot_data()
 
     # Update text in entries with actual bounds used
     app.lowerSearchBound_entry.delete(0, END)
     app.upperSearchBound_entry.delete(0, END)
-    app.lowerSearchBound_entry.insert(0, str(trial.current_sample().normalize_lower_bound))
-    app.upperSearchBound_entry.insert(0, str(trial.current_sample().normalize_upper_bound))
+    app.lowerSearchBound_entry.insert(0, str(app.trial.current_sample().normalize_lower_bound))
+    app.upperSearchBound_entry.insert(0, str(app.trial.current_sample().normalize_upper_bound))
     return
 
 
 def change_directory():
     # Open file selection box
-    print tkFileDialog.askdirectory()
+    selected_dir = tkFileDialog.askdirectory()
+    app.trial = Trial(selected_dir)
+    app.trial.plot_data()
     return
 
 
 class Application(Frame):
 
     def __init__(self, master):
+
+        # Create Trial (Defaults to parent directory of where the .py file is located)
+        program_directory = os.getcwd()
+        default_dir = os.path.dirname(program_directory)
+        self.trial = Trial(default_dir)
+        self.trial.plot_data()
+
+
         frame = Frame(master)
         frame.pack()
 
@@ -387,7 +392,6 @@ class Application(Frame):
         self.save_btn.grid(row=0, column=9)
 
         self.update_btn = Button(self.botRightFrame, text='Update', command=update_bounds)
-        # self.update_btn.bind('<Return>', update_bounds)
         self.update_btn.grid(row=0, column=8)
 
         self.nxtSample_btn = Button(self.botRightFrame, text='Next Sample', command=next_sample)
