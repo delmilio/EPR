@@ -347,6 +347,18 @@ def change_directory():
     return
 
 
+def open_trial():
+    # Open file selection box
+    selected_dir = tkFileDialog.askdirectory()
+    app.trial = Trial(selected_dir)
+    app.trial.plot_data()
+    return
+
+
+def create_new_trial():
+    return
+
+
 class Application(Frame):
 
     def __init__(self, master):
@@ -356,7 +368,6 @@ class Application(Frame):
         default_dir = os.path.dirname(program_directory)
         self.trial = Trial(default_dir)
         self.trial.plot_data()
-
 
         frame = Frame(master)
         frame.pack()
@@ -378,10 +389,10 @@ class Application(Frame):
         self.new_dir_btn = Button(self.leftFrame, text='Change Directory', command=change_directory)
         self.new_dir_btn.grid(row=0, column=0)
 
-        self.new_trial_btn = Button(self.leftFrame, text='Create New Trial')
+        self.new_trial_btn = Button(self.leftFrame, text='Create New Trial', command=create_new_trial)
         self.new_trial_btn.grid(row=1, column=0)
 
-        self.open_trial_btn = Button(self.leftFrame, text='Open Trial')
+        self.open_trial_btn = Button(self.leftFrame, text='Open Trial', command=open_trial)
         self.open_trial_btn.grid(row=2, column=0)
 
         self.multi_trial_averages_btn = Button(self.leftFrame, text='Multipul Averages')
@@ -417,6 +428,7 @@ class Application(Frame):
         self.canvas = FigureCanvasTkAgg(self.graph, master=self.topRightFrame)
         plot_widget = self.canvas.get_tk_widget()
         plot_widget.pack()
+
 
 # Create Main Frame
 root = Tk()
