@@ -298,6 +298,7 @@ class Data():
 
     def graph_data(self, cutoffs=False):
         x, y = self.normalized_data
+        plt.figure(1)  # select trial_graph
         plt.plot(x, y, label='Trial '+self.sample_num)
         if cutoffs:
             plt.plot([x[self.normalize_lower_bound], x[self.normalize_upper_bound]], [y[self.max_val_loc], y[self.max_val_loc]], color='g', linestyle='--')
@@ -424,8 +425,8 @@ class Application(Frame):
         self.upperSearchBound_entry.grid(row=0, column=7)
 
         # Create Right Top Frame Canvases
-        self.graph = plt.figure(1)
-        self.canvas = FigureCanvasTkAgg(self.graph, master=self.topRightFrame)
+        self.trial_graph = plt.figure(1)
+        self.canvas = FigureCanvasTkAgg(self.trial_graph, master=self.topRightFrame)
         plot_widget = self.canvas.get_tk_widget()
         plot_widget.pack()
 
