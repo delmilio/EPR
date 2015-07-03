@@ -117,7 +117,7 @@ class Trial():
             text_file.write('Peak separation standard deviation (number of samples): ' + str(numpy.std(data_stats[5])))
 
         # Make and save plot
-        plt.figure(2)
+        plt.figure(2)  # off screen figure
         plt.clf()
         plt.grid(True)
         plt.xlim([self.min_current, self.max_current])
@@ -128,7 +128,7 @@ class Trial():
 
         # Compute average response
         # Make Graph and Save
-        plt.figure(3)
+        plt.figure(3)  # off screen figure
         plt.clf()
         plt.grid(True)
         plt.xlim([self.min_current, self.max_current])
@@ -377,14 +377,25 @@ class Application(Frame):
         self.leftFrame = Frame(master)
         self.leftFrame.pack(side=LEFT)
 
-        self.rightFrame = Frame(master)
-        self.rightFrame.pack(side=RIGHT)
+            # Create Trial Frames
+        self.trialFrame = Frame(master)
+        self.trialFrame.pack(side=RIGHT)
 
-        self.topRightFrame = Frame(self.rightFrame)
-        self.topRightFrame.pack(side=TOP)
+        self.topTrialFrame = Frame(self.trialFrame)
+        self.topTrialFrame.pack(side=TOP)
 
-        self.botRightFrame = Frame(self.rightFrame)
-        self.botRightFrame.pack(side=BOTTOM)
+        self.botTrialFrame = Frame(self.trialFrame)
+        self.botTrialFrame.pack(side=BOTTOM)
+
+            # Create New Trial Frames
+        self.newTrialFrame = Frame(master)
+        self.newTrialFrame.pack_forget()
+
+        self.botNewTrialFrame = Frame(self.newTrialFrame)
+        self.botNewTrialFrame.pack(side=BOTTOM)
+
+        self.topNewTrialFrame = Frame(self.newTrialFrame)
+        self.topNewTrialFrame.pack(side=TOP)
 
         # Create Left Frame Widgets
         self.new_dir_btn = Button(self.leftFrame, text='Change Directory', command=change_directory)
@@ -399,34 +410,34 @@ class Application(Frame):
         self.multi_trial_averages_btn = Button(self.leftFrame, text='Multipul Averages')
         self.multi_trial_averages_btn.grid(row=3, column=0)
 
-        # Create Right Bottom Frame Widgets
-        self.save_btn = Button(self.botRightFrame, text='Save', command=save)
+        # Create Bottom Trial Frame Widgets
+        self.save_btn = Button(self.botTrialFrame, text='Save', command=save)
         self.save_btn.grid(row=0, column=9)
 
-        self.update_btn = Button(self.botRightFrame, text='Update', command=update_bounds)
+        self.update_btn = Button(self.botTrialFrame, text='Update', command=update_bounds)
         self.update_btn.grid(row=0, column=8)
 
-        self.nxtSample_btn = Button(self.botRightFrame, text='Next Sample', command=next_sample)
+        self.nxtSample_btn = Button(self.botTrialFrame, text='Next Sample', command=next_sample)
         self.nxtSample_btn.grid(row=0, column=2)
 
-        self.prvSample_btn = Button(self.botRightFrame, text='Previous Sample', command=previous_sample)
+        self.prvSample_btn = Button(self.botTrialFrame, text='Previous Sample', command=previous_sample)
         self.prvSample_btn.grid(row=0, column=0)
 
-        self.sampleNum_label = Label(self.botRightFrame, text='Sample 1')
+        self.sampleNum_label = Label(self.botTrialFrame, text='Sample 1')
         self.sampleNum_label.grid(row=0, column=1)
 
-        self.searchWin_label = Label(self.botRightFrame, text='to')
+        self.searchWin_label = Label(self.botTrialFrame, text='to')
         self.searchWin_label.grid(row=0, column=6)
 
-        self.lowerSearchBound_entry = Entry(self.botRightFrame)
+        self.lowerSearchBound_entry = Entry(self.botTrialFrame)
         self.lowerSearchBound_entry.grid(row=0, column=5)
 
-        self.upperSearchBound_entry = Entry(self.botRightFrame)
+        self.upperSearchBound_entry = Entry(self.botTrialFrame)
         self.upperSearchBound_entry.grid(row=0, column=7)
 
-        # Create Right Top Frame Canvases
+        # Create Top Trial Frame Canvases
         self.trial_graph = plt.figure(1)
-        self.canvas = FigureCanvasTkAgg(self.trial_graph, master=self.topRightFrame)
+        self.canvas = FigureCanvasTkAgg(self.trial_graph, master=self.topTrialFrame)
         plot_widget = self.canvas.get_tk_widget()
         plot_widget.pack()
 
