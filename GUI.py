@@ -70,13 +70,13 @@ class Trial():
         plt.grid(True)
         plt.xlim([self.min_current, self.max_current])
         for line in self.data:
-            line.graph_data()
+            line.graph_trial_data()
 
         # Plot selected signal with bound lines in subplot 2
         plt.subplot(212)
         plt.grid(True)
         plt.xlim([self.min_current, self.max_current])
-        self.current_sample().graph_data(True)
+        self.current_sample().graph_trial_data(True)
 
         # Show the plot
         plt.figure(1).canvas.draw()
@@ -122,7 +122,7 @@ class Trial():
         plt.grid(True)
         plt.xlim([self.min_current, self.max_current])
         for line in self.data:
-            line.graph_data()
+            line.graph_trial_data()
         plt.legend()
         plt.savefig(os.path.join(new_dir, 'plots.png'))
 
@@ -296,7 +296,7 @@ class Data():
 
         return peak_distance_v/2.0, max_current, min_current, peak_distance_v, peak_distance_a, peak_distance_s
 
-    def graph_data(self, cutoffs=False):
+    def graph_trial_data(self, cutoffs=False):
         x, y = self.normalized_data
         plt.figure(1)  # select trial_graph
         plt.plot(x, y, label='Trial '+self.sample_num)
