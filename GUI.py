@@ -298,7 +298,6 @@ class Data():
 
     def graph_trial_data(self, cutoffs=False):
         x, y = self.normalized_data
-        plt.figure(1)  # select trial_graph
         plt.plot(x, y, label='Trial '+self.sample_num)
         if cutoffs:
             plt.plot([x[self.normalize_lower_bound], x[self.normalize_upper_bound]], [y[self.max_val_loc], y[self.max_val_loc]], color='g', linestyle='--')
@@ -389,7 +388,7 @@ class Application(Frame):
 
             # Create New Trial Frames
         self.newTrialFrame = Frame(master)
-        self.newTrialFrame.pack_forget()
+        self.newTrialFrame.pack(side=RIGHT)
 
         self.botNewTrialFrame = Frame(self.newTrialFrame)
         self.botNewTrialFrame.pack(side=BOTTOM)
