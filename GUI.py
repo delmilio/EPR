@@ -286,7 +286,7 @@ class Data():
 
         # Append to file
         with open(stat_file, 'a') as text_file:
-            text_file.write('TRIAL ' + str(self.path)[22:] + '\n')
+            text_file.write('TRIAL ' + os.path.basename(self.path) + '\n')
             text_file.write('Amplitude (V): ' + str(peak_distance_v / 2.0) + '\n')
             text_file.write('Max amplitude current (A): ' + str(max_current) + '\n')
             text_file.write('Min amplitude current (A): ' + str(min_current) + '\n')
