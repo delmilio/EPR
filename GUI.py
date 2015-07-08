@@ -105,10 +105,10 @@ class Trial():
             text_file.write('Amplitude standard deviation (V): ' + str(numpy.std(data_stats[0])) + '\n\n')
 
             text_file.write('Mean max amplitude current (A): ' + str(numpy.mean(data_stats[1])) + '\n')
-            text_file.write('Max amplutude current standard deviation (A): ' + str(numpy.std(data_stats[1])) + '\n\n')
+            text_file.write('Max amplitude current standard deviation (A): ' + str(numpy.std(data_stats[1])) + '\n\n')
 
             text_file.write('Mean min amplitude current (A): ' + str(numpy.mean(data_stats[2])) + '\n')
-            text_file.write('Min amplutude current standard deviation (A): ' + str(numpy.std(data_stats[2])) + '\n\n')
+            text_file.write('Min amplitude current standard deviation (A): ' + str(numpy.std(data_stats[2])) + '\n\n')
 
             text_file.write('Mean peak distance (V): ' + str(numpy.mean(data_stats[3])) + '\n')
             text_file.write('Peak distance standard deviation (V): ' + str(numpy.std(data_stats[3])) + '\n\n')
@@ -256,9 +256,9 @@ class Data():
               if this is NOT the case then change the [0] 'max_val_loc line' to [-1]
               and change the [-1] in the 'min_val_loc' line (min) to [0]
         """
-        # Find the FIRST occurence of the maximum value, as it may not be unique
+        # Find the FIRST occurrence of the maximum value, as it may not be unique
         self.max_val_loc = [i for i, j in enumerate(voltage_data[lower_bound:upper_bound]) if j == peak][0] + lower_bound
-        # Find the LAST occurence of the minimum value, as it may not be unique
+        # Find the LAST occurrence of the minimum value, as it may not be unique
         self.min_val_loc = [i for i, j in enumerate(voltage_data[lower_bound:upper_bound]) if j == trough][-1] + lower_bound
         center = (peak + trough) / 2.0
 
