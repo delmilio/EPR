@@ -96,6 +96,9 @@ class Trial():
             data_stats.append(data.statistics_data(stats_file))
         data_stats = zip(*data_stats)
 
+        # Copy over comment.txt
+        shutil.copyfile(os.path.join(self.data_directory, 'comment.txt'), os.path.join(new_dir, 'comment.txt'))
+
         with open(os.path.join(new_dir, 'statistics_analysis.txt'), 'a') as text_file:
             text_file.write('RESULTS SUMMARY\n')
             text_file.write('Mean amplitude (V): ' + str(numpy.mean(data_stats[0])) + '\n')
