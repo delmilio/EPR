@@ -9,6 +9,51 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 
 
+class TrialSummary():
+    """
+    Similar to the Trial class. However, is only to be used if statistics_analysis.txt already exists for this trial.
+    The purpose of this class is to provide an interface for loading information about the trial without the overhead
+    needed to compute it again.
+    """
+    def __init__(self, directory):
+        # Find Data Directory
+        self.data_directory = directory
+
+        """
+        For parsing comment.txt and statistics_analysis.txt it is assumed that the data follows the same format that
+        this program outputs statistics_analysis.txt and comment.txt
+        """
+
+        # Find Comment File and Extract Information
+        self.comment_file = open(os.path.join(self.data_directory, 'comment.txt')).read().split('\n')
+        self.name = self.comment_file[0][8:]
+        self.min_current = float(self.comment_file[1][13:-2])
+        self.max_current = float(self.comment_file[2][13:-2])
+        self.sensitivity = float(self.comment_file[5][13:-3])
+
+        # Find Statistics File and Extract Information
+        self.stats_file = open(os.path.join(self.data_directory, 'statistics_analysis.txt')).read().split('\n')
+        summary_start_loc = self.stats_file.index('RESULTS SUMMARY') + 1
+        self.stats_file = self.stats_file[summary_start_loc:]
+
+        self.stats_list = []
+        for stat in self.stats_file:
+            if stat != '':
+                i = stat.index(':') + 1
+                self.stats_list.append(float(stat[i:]))
+
+        # Load Average Response Data
+        average_response = open(os.path.join(self.data_directory, 'average_signal_data.txt')).read().split('\n')
+        average_response.pop()  # Remove last empty element
+
+        self.average_current_data = []
+        self.average_voltage_data = []
+        for point in average_response:
+            data = point.split('\t')
+            self.average_current_data.append(float(data[1]))
+            self.average_voltage_data.append(float(data[2]))
+
+
 class Trial():
 
     def __init__(self, directory):
@@ -16,7 +61,7 @@ class Trial():
         # Find Data Directory
         self.data_directory = directory
 
-        # Find Comment File
+        # Find Comment File and Extract Information
         self.comment_file = open(os.path.join(self.data_directory, 'comment.txt')).read().split('\n')
         self.name = self.comment_file[0][8:]
         self.min_current = float(self.comment_file[1][13:-2])
@@ -353,6 +398,7 @@ def change_directory():
 def open_trial():
     # Open file selection box
     selected_dir = tkFileDialog.askdirectory()
+    print selected_dir
     app.trial = Trial(selected_dir)
     app.trial.plot_data()
     return
@@ -363,6 +409,16 @@ def create_new_trial():
 
 
 def multi_trial_stats():
+    # Need to create way for user to select more than one trial directory, and the dirs they pick are returned as a list
+    # for now use a static list
+    trial_dir_list = ['H:/Documents/EPR_Data/06-09-2015 04-13-21 PM', 'H:/Documents/EPR_Data/06-09-2015 04-22-24 PM', 'H:/Documents/EPR_Data/06-09-2015 04-38-01 PM', 'H:/Documents/EPR_Data/06-09-2015 04-47-26 PM', 'H:/Documents/EPR_Data/06-09-2015 04-58-34 PM']
+
+    trial_summaries = []
+    for trial_dir in trial_dir_list:
+        # Create a TrialSummary Object for each trial
+        trial_summaries.append(TrialSummary(trial_dir))
+        break
+    print "done"
     return
 
 class Application(Frame):
