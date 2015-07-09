@@ -362,6 +362,9 @@ def create_new_trial():
     return
 
 
+def multi_trial_stats():
+    return
+
 class Application(Frame):
 
     def __init__(self, master):
@@ -409,7 +412,7 @@ class Application(Frame):
         self.open_trial_btn = Button(self.leftFrame, text='Open Trial', command=open_trial)
         self.open_trial_btn.grid(row=2, column=0)
 
-        self.multi_trial_averages_btn = Button(self.leftFrame, text='Multipul Averages')
+        self.multi_trial_averages_btn = Button(self.leftFrame, text='Multi Trial Statistics', command=multi_trial_stats)
         self.multi_trial_averages_btn.grid(row=3, column=0)
 
         # Create Bottom Trial Frame Widgets
