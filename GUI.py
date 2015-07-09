@@ -53,6 +53,9 @@ class TrialSummary():
             self.average_current_data.append(float(data[1]))
             self.average_voltage_data.append(float(data[2]))
 
+    def get_average_response(self):
+        return self.average_current_data, self.average_voltage_data
+
 
 class Trial():
 
@@ -176,7 +179,7 @@ class Trial():
 
         # Compute average response
         # Make Graph and Save
-        plt.figure(3)  # off screen figure
+        plt.figure(2)  # off screen figure
         plt.clf()
         plt.grid(True)
         plt.xlim([self.min_current, self.max_current])
@@ -398,7 +401,6 @@ def change_directory():
 def open_trial():
     # Open file selection box
     selected_dir = tkFileDialog.askdirectory()
-    print selected_dir
     app.trial = Trial(selected_dir)
     app.trial.plot_data()
     return
@@ -417,7 +419,23 @@ def multi_trial_stats():
     for trial_dir in trial_dir_list:
         # Create a TrialSummary Object for each trial
         trial_summaries.append(TrialSummary(trial_dir))
-        break
+
+    # Create New Folder named after the date of the first trial in trial_dir_list, and get the parent of this dir
+    new_dir_name = os.path.basename(trial_dir_list[0][:-12]) + ' Summary' + '_test'  # _test is for debugging
+    new_dir_parent = os.path.dirname(trial_dir_list[0])
+    new_dir = os.path.join(new_dir_parent, new_dir_name)
+    os.makedirs(new_dir)
+
+    # Create Plot of Averages and save
+    plt.figure(2)  # off screen figure
+    plt.clf()
+    plt.grid(True)
+    for summary in trial_summaries:
+        x, y = summary.get_average_response()
+        plt.plot(x, y, label=summary.name)
+    plt.legend()
+    plt.savefig(os.path.join(new_dir, 'average_plot.png'))
+
     print "done"
     return
 
