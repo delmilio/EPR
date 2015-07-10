@@ -56,6 +56,29 @@ class TrialSummary():
     def get_average_response(self):
         return self.average_current_data, self.average_voltage_data
 
+    def save_data(self, new_dir):
+        with open(os.path.join(new_dir, 'statistics_analysis.txt'), 'a') as text_file:
+            text_file.write('RESULTS SUMMARY' + ' -- Sample ' + self.name + '\n')
+            text_file.write('Sensitivity: ' + str(self.sensitivity) + '\n')
+
+            text_file.write('Mean amplitude (V): ' + str(self.stats_list[0]) + '\n')
+            text_file.write('Amplitude standard deviation (V): ' + str(self.stats_list[1]) + '\n\n')
+
+            text_file.write('Mean max amplitude current (A): ' + str(self.stats_list[ 2]) + '\n')
+            text_file.write('Max amplitude current standard deviation (A): ' + str(self.stats_list[3]) + '\n\n')
+
+            text_file.write('Mean min amplitude current (A): ' + str(self.stats_list[4]) + '\n')
+            text_file.write('Min amplitude current standard deviation (A): ' + str(self.stats_list[5]) + '\n\n')
+
+            text_file.write('Mean peak distance (V): ' + str(self.stats_list[6]) + '\n')
+            text_file.write('Peak distance standard deviation (V): ' + str(self.stats_list[7]) + '\n\n')
+
+            text_file.write('Mean peak separation (A): ' + str(self.stats_list[8]) + '\n')
+            text_file.write('Peak separation standard deviation (A): ' + str(self.stats_list[9]) + '\n\n')
+
+            text_file.write('Mean peak separation (number of samples): ' + str(self.stats_list[10]) + '\n')
+            text_file.write('Peak separation standard deviation (number of samples): ' + str(self.stats_list[11]) + '\n\n\n')
+        return
 
 class Trial():
 
@@ -413,6 +436,8 @@ def create_new_trial():
 def multi_trial_stats():
     """
     Note: a lot of this should probably be in helper function tbh
+    May want to add recursive copy of trial folders into summary folder, idk
+    I also forgot to take sensitivity into account, I'll fix that once this all works
     """
     # Need to create way for user to select more than one trial directory, and the dirs they pick are returned as a list
     # for now use a static list
@@ -469,8 +494,9 @@ def multi_trial_stats():
         plt.xlim([-1, len(values)])
         plt.savefig(os.path.join(new_dir, measurement_title[measurement]))
 
-
-    print "done"
+    # Create Summary.txt
+    for number, trial in summary_plot_numbered:
+        trial.save_data(new_dir)
     return
 
 
