@@ -411,6 +411,9 @@ def create_new_trial():
 
 
 def multi_trial_stats():
+    """
+    Note: a lot of this should probably be in helper function tbh
+    """
     # Need to create way for user to select more than one trial directory, and the dirs they pick are returned as a list
     # for now use a static list
     trial_dir_list = ['H:/Documents/EPR_Data/06-09-2015 04-13-21 PM', 'H:/Documents/EPR_Data/06-09-2015 04-22-24 PM', 'H:/Documents/EPR_Data/06-09-2015 04-38-01 PM', 'H:/Documents/EPR_Data/06-09-2015 04-47-26 PM', 'H:/Documents/EPR_Data/06-09-2015 04-58-34 PM']
@@ -436,8 +439,40 @@ def multi_trial_stats():
     plt.legend()
     plt.savefig(os.path.join(new_dir, 'average_plot.png'))
 
+    # Check if each trial can be given a number based on sample name
+    summary_plot_numbered = []
+    flag = True
+    for trial in trial_summaries:
+        try:
+            num = float(trial.name)
+            summary_plot_numbered.append((num, trial))
+        except:
+            flag = False
+            break
+
+    if flag:
+        # Sort list by associated trial number (lest to greatest)
+        summary_plot_numbered = sorted(summary_plot_numbered, key=lambda i: i[0])
+
+    measurement_title = {0: "Amplitude (V)", 2: "Max amplitude current (A)", 4: "Min amplitude current (A)", 6: "Peak distance (V)", 8: "Peak separation (A)"}
+    for measurement in range(0, 9, 2):
+        plt.figure(2)
+        plt.clf()
+        values = [data.stats_list[measurement] for number, data in summary_plot_numbered]
+        errors = [data.stats_list[measurement + 1] for number, data in summary_plot_numbered]
+        plt.errorbar(range(len(values)), values, yerr=errors)
+        for (label, x, y) in zip([x[0] for x in summary_plot_numbered], range(len(values)), values):
+            plt.annotate(label, xy=(x, y), xytext=(5, 5), textcoords="offset points")
+        plt.title(measurement_title[measurement])
+        plt.xlabel("Sample")
+        plt.ylabel("Value and error (one standard deviation)")
+        plt.xlim([-1, len(values)])
+        plt.savefig(os.path.join(new_dir, measurement_title[measurement]))
+
+
     print "done"
     return
+
 
 class Application(Frame):
 
