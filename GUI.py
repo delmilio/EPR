@@ -42,7 +42,7 @@ class TrialSummary():
                 i = stat.index(':') + 1
                 self.stats_list.append(float(stat[i:]))
 
-        # # Load Average Response Data
+        # Load Average Response Data
         average_response = open(os.path.join(self.data_directory, 'average_signal_data.txt')).read().split('\n')
         average_response.pop()  # Remove last empty element
 
@@ -457,24 +457,18 @@ def multi_trial_stats():
     # Ask for the first trial
     trial_dir_list = []
     selected_dir = tkFileDialog.askdirectory()
-    trial_dir_list.append(selected_dir)
-
-    answer = tkMessageBox.askquestion('Selection', 'Add Another Trial?')
-    while answer == 'yes':
-        selected_dir = tkFileDialog.askdirectory()
-        trial_dir_list.append(selected_dir)
-        answer = tkMessageBox.askquestion('Selection', 'Add Another Trial?')
+    sub_dirs = [os.path.join(selected_dir, name) for name in os.listdir(selected_dir) if os.path.isdir(os.path.join(selected_dir, name))]
 
     trial_summaries = []
-    for trial_dir in trial_dir_list:
+    for trial_dir in sub_dirs:
         # Create a TrialSummary Object for each trial
         trial_summaries.append(TrialSummary(trial_dir))
 
-    # Create New Folder named after the date of the first trial in trial_dir_list, and get the parent of this dir
-    new_dir_name = os.path.basename(trial_dir_list[0][:-12]) + ' Summary' + '_test'  # _test is for debugging
-    new_dir_parent = os.path.dirname(trial_dir_list[0])
-    new_dir = os.path.join(new_dir_parent, new_dir_name)
-    os.makedirs(new_dir)
+    # # Create New Folder named after the date of the first trial in trial_dir_list, and get the parent of this dir
+    # new_dir_name = os.path.basename(trial_dir_list[0][:-12]) + ' Summary' + '_test'  # _test is for debugging
+    # new_dir_parent = os.path.dirname(trial_dir_list[0])
+    # new_dir = os.path.join(new_dir_parent, new_dir_name)
+    # os.makedirs(new_dir)
 
     # Create Plot of Averages and save
     plt.figure(2)  # off screen figure
@@ -484,7 +478,7 @@ def multi_trial_stats():
         x, y = summary.get_average_response()
         plt.plot(x, y, label=summary.name)
     plt.legend()
-    plt.savefig(os.path.join(new_dir, 'average_plot.png'))
+    plt.savefig(os.path.join(selected_dir, 'average_plot.png'))
 
     # Check if each trial can be given a number based on sample name
     summary_plot_numbered = []
@@ -515,11 +509,11 @@ def multi_trial_stats():
         plt.xlabel("Sample")
         plt.ylabel("Value and error (one standard deviation)")
         plt.xlim([-1, len(values)])
-        plt.savefig(os.path.join(new_dir, measurement_title[measurement]))
+        plt.savefig(os.path.join(selected_dir, measurement_title[measurement]))
 
     # Create Summary.txt
     for number, trial in summary_plot_numbered:
-        trial.save_data(new_dir)
+        trial.save_data(selected_dir)
     return
 
 
