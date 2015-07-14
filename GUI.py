@@ -42,7 +42,7 @@ class TrialSummary():
                 i = stat.index(':') + 1
                 self.stats_list.append(float(stat[i:]))
 
-        # Load Average Response Data
+        # # Load Average Response Data
         average_response = open(os.path.join(self.data_directory, 'average_signal_data.txt')).read().split('\n')
         average_response.pop()  # Remove last empty element
 
@@ -54,7 +54,19 @@ class TrialSummary():
             self.average_voltage_data.append(float(data[2]))
 
     def get_average_response(self):
-        return self.average_current_data, self.average_voltage_data
+        """
+        returns the average response normalized to 1mv sensitivity
+        """
+        return self.average_current_data, [v*self.sensitivity for v in self.average_voltage_data]
+
+    def get_stats_list(self):
+        """
+        return stats list normalized to 1mv sensitivity
+        """
+        normalized_stats = self.stats_list
+        for i in [0, 1, 6, 7]:
+            normalized_stats[i] *= self.sensitivity
+        return normalized_stats
 
     def save_data(self, new_dir):
         with open(os.path.join(new_dir, 'statistics_analysis.txt'), 'a') as text_file:
@@ -64,7 +76,7 @@ class TrialSummary():
             text_file.write('Mean amplitude (V): ' + str(self.stats_list[0]) + '\n')
             text_file.write('Amplitude standard deviation (V): ' + str(self.stats_list[1]) + '\n\n')
 
-            text_file.write('Mean max amplitude current (A): ' + str(self.stats_list[ 2]) + '\n')
+            text_file.write('Mean max amplitude current (A): ' + str(self.stats_list[2]) + '\n')
             text_file.write('Max amplitude current standard deviation (A): ' + str(self.stats_list[3]) + '\n\n')
 
             text_file.write('Mean min amplitude current (A): ' + str(self.stats_list[4]) + '\n')
@@ -79,6 +91,7 @@ class TrialSummary():
             text_file.write('Mean peak separation (number of samples): ' + str(self.stats_list[10]) + '\n')
             text_file.write('Peak separation standard deviation (number of samples): ' + str(self.stats_list[11]) + '\n\n\n')
         return
+
 
 class Trial():
 
@@ -493,8 +506,8 @@ def multi_trial_stats():
     for measurement in range(0, 9, 2):
         plt.figure(2)
         plt.clf()
-        values = [data.stats_list[measurement] for number, data in summary_plot_numbered]
-        errors = [data.stats_list[measurement + 1] for number, data in summary_plot_numbered]
+        values = [data.get_stats_list()[measurement] for number, data in summary_plot_numbered]
+        errors = [data.get_stats_list()[measurement + 1] for number, data in summary_plot_numbered]
         plt.errorbar(range(len(values)), values, yerr=errors)
         for (label, x, y) in zip([x[0] for x in summary_plot_numbered], range(len(values)), values):
             plt.annotate(label, xy=(x, y), xytext=(5, 5), textcoords="offset points")
