@@ -1,6 +1,6 @@
 from Tkinter import *
 from collections import defaultdict
-import os, datetime, time, numpy, shutil, tkFileDialog, tkMessageBox
+import os, datetime, time, numpy, shutil, tkFileDialog
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -452,23 +452,14 @@ def multi_trial_stats():
     May want to add recursive copy of trial folders into summary folder, idk
     I also forgot to take sensitivity into account, I'll fix that once this all works
     """
-    # Need to create way for user to select more than one trial directory, and the dirs they pick are returned as a list
-    # for now use a static list
-    # Ask for the first trial
-    trial_dir_list = []
+    # Ask user for directory with all data directories to be used inside
     selected_dir = tkFileDialog.askdirectory()
     sub_dirs = [os.path.join(selected_dir, name) for name in os.listdir(selected_dir) if os.path.isdir(os.path.join(selected_dir, name))]
 
+    # Create a TrialSummary Object for each trial
     trial_summaries = []
     for trial_dir in sub_dirs:
-        # Create a TrialSummary Object for each trial
         trial_summaries.append(TrialSummary(trial_dir))
-
-    # # Create New Folder named after the date of the first trial in trial_dir_list, and get the parent of this dir
-    # new_dir_name = os.path.basename(trial_dir_list[0][:-12]) + ' Summary' + '_test'  # _test is for debugging
-    # new_dir_parent = os.path.dirname(trial_dir_list[0])
-    # new_dir = os.path.join(new_dir_parent, new_dir_name)
-    # os.makedirs(new_dir)
 
     # Create Plot of Averages and save
     plt.figure(2)  # off screen figure
