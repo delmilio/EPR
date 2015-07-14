@@ -1,6 +1,6 @@
 from Tkinter import *
 from collections import defaultdict
-import os, datetime, time, numpy, shutil, tkFileDialog
+import os, datetime, time, numpy, shutil, tkFileDialog, tkMessageBox
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -441,7 +441,16 @@ def multi_trial_stats():
     """
     # Need to create way for user to select more than one trial directory, and the dirs they pick are returned as a list
     # for now use a static list
-    trial_dir_list = ['H:/Documents/EPR_Data/06-09-2015 04-13-21 PM', 'H:/Documents/EPR_Data/06-09-2015 04-22-24 PM', 'H:/Documents/EPR_Data/06-09-2015 04-38-01 PM', 'H:/Documents/EPR_Data/06-09-2015 04-47-26 PM', 'H:/Documents/EPR_Data/06-09-2015 04-58-34 PM']
+    # Ask for the first trial
+    trial_dir_list = []
+    selected_dir = tkFileDialog.askdirectory()
+    trial_dir_list.append(selected_dir)
+
+    answer = tkMessageBox.askquestion('Selection', 'Add Another Trial?')
+    while answer == 'yes':
+        selected_dir = tkFileDialog.askdirectory()
+        trial_dir_list.append(selected_dir)
+        answer = tkMessageBox.askquestion('Selection', 'Add Another Trial?')
 
     trial_summaries = []
     for trial_dir in trial_dir_list:
@@ -479,6 +488,7 @@ def multi_trial_stats():
         # Sort list by associated trial number (lest to greatest)
         summary_plot_numbered = sorted(summary_plot_numbered, key=lambda i: i[0])
 
+    # Create the Summary Plots
     measurement_title = {0: "Amplitude (V)", 2: "Max amplitude current (A)", 4: "Min amplitude current (A)", 6: "Peak distance (V)", 8: "Peak separation (A)"}
     for measurement in range(0, 9, 2):
         plt.figure(2)
