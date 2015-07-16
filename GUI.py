@@ -428,25 +428,30 @@ def update_bounds():
 
 def change_directory():
     # Open file selection box
-    selected_dir = tkFileDialog.askdirectory()
-    app.change_trial(selected_dir)
+    app.selected_dir = tkFileDialog.askdirectory()
+    app.change_trial(app.selected_dir)
     return
 
 
 def open_trial():
     # Open file selection box
-    selected_dir = tkFileDialog.askdirectory()
-    app.change_trial(selected_dir)
+    print app.selected_dir
+    app.selected_dir = tkFileDialog.askdirectory()
+    print app.selected_dir
+    app.change_trial(app.selected_dir)
     return
 
 
-def create_new_trial():
-    # Create dialog box and prevent user from clicking on main window until the comment window is closed
-    c = Toplevel()
-    c.transient(root)
-    c.grab_set()
-    root.wait_window(c)
+def open_new_trial_window():
+    # Create dialog box
+    CommentWindow(root)
+    # When comment.txt has been created show the graphs
+    app.change_trial(app.selected_dir)
     return
+
+
+def new_trial_save_loc():
+    return app.selected_dir
 
 
 def multi_trial_stats():
@@ -511,23 +516,82 @@ def multi_trial_stats():
     return
 
 
-class CommentWindow:
+class CommentWindow(Toplevel):
 
     def __init__(self, master):
-        self.top = Toplevel(master)
-        self.master = master
+        self.wdw = Toplevel()
 
         # Create Widgets
-        self.sample_label = Label(self.master, text='Sample Name: ')
+        self.sample_label = Label(self.wdw, text='Sample Name: ')
         self.sample_label.grid(row=0, column=0)
-        self.sample_entry = Entry(self.master)
+        self.sample_entry = Entry(self.wdw)
         self.sample_entry.grid(row=0, column=1)
+
+        self.min_current_label = Label(self.wdw, text='Minimum Current (A): ')
+        self.min_current_label.grid(row=1, column=0)
+        self.min_current_entry = Entry(self.wdw)
+        self.min_current_entry.grid(row=1, column=1)
+
+        self.max_current_label = Label(self.wdw, text='Maximum Current (A): ')
+        self.max_current_label.grid(row=2, column=0)
+        self.max_current_entry = Entry(self.wdw)
+        self.max_current_entry.grid(row=2, column=1)
+
+        self.rc_label = Label(self.wdw, text='RC Time Constant (ms): ')
+        self.rc_label.grid(row=3, column=0)
+        self.rc_entry = Entry(self.wdw)
+        self.rc_entry.grid(row=3, column=1)
+
+        self.phase_label = Label(self.wdw, text='Phase (degrees): ')
+        self.phase_label.grid(row=4, column=0)
+        self.phase_entry = Entry(self.wdw)
+        self.phase_entry.grid(row=4, column=1)
+
+        self.sensitivity_label = Label(self.wdw, text='Sensitivity (mV): ')
+        self.sensitivity_label.grid(row=5, column=0)
+        self.sensitivity_entry = Entry(self.wdw)
+        self.sensitivity_entry.grid(row=5, column=1)
+
+        self.save_btn = Button(self.wdw, text='Save', command=self.save)
+        self.save_btn.grid(row=6, columnspan=2)
+
+        self.wdw.transient()
+        self.wdw.grab_set()
+        root.wait_window(self.wdw)
+        return
+
+    def save(self):
+        save_dir = new_trial_save_loc()
+        print save_dir
+        # Read values from entries print an error if there's an issue
+        try:
+            sample = self.sample_entry.get()
+            current_low = float(self.min_current_entry.get())
+            current_high = float(self.max_current_entry.get())
+            rc_constant = float(self.rc_entry.get())
+            phase = float(self.phase_entry.get())
+            sensitivity = float(self.sensitivity_entry.get())
+            self.wdw.destroy()
+        except:
+            print "Error: one or more entries invalid"
+            return
+
+        #Create Comment.txt
+        with open(os.path.join(save_dir, "comment.txt"), "w") as text_file:
+            text_file.write("Sample: " + sample + "\n")
+            text_file.write("Min Current: " + str(current_low) + " A\n")
+            text_file.write("Max Current: " + str(current_high) + " A\n")
+            text_file.write("RC Time Constant: " + str(rc_constant) + " mS\n")
+            text_file.write("Phase: " + str(phase) + " degrees\n")
+            text_file.write("Sensitivity: " + str(sensitivity) + " mV\n")
         return
 
 
 class Application(Frame):
 
     def __init__(self, master):
+        self.comment_window = None
+
         # Create Main Frames
         self.leftFrame = Frame(master)
         self.leftFrame.pack(side=LEFT)
@@ -556,7 +620,7 @@ class Application(Frame):
         self.new_dir_btn = Button(self.leftFrame, text='Change Directory', command=change_directory)
         self.new_dir_btn.grid(row=0, column=0)
 
-        self.new_trial_btn = Button(self.leftFrame, text='Create New Trial', command=create_new_trial)
+        self.new_trial_btn = Button(self.leftFrame, text='Create New Trial', command=open_new_trial_window)
         self.new_trial_btn.grid(row=1, column=0)
 
         self.open_trial_btn = Button(self.leftFrame, text='Open Trial', command=open_trial)
@@ -599,15 +663,15 @@ class Application(Frame):
         # Create Trial (Defaults to parent directory of where the .py file is located)
         self.trial = None
         program_directory = os.getcwd()
-        default_dir = os.path.dirname(program_directory)
-        self.change_trial(default_dir)
+        self.selected_dir = os.path.dirname(program_directory)
+        self.change_trial(self.selected_dir)
 
     def change_trial(self, trial_path):
         try:
             self.trial = Trial(trial_path)
             self.trial.plot_data()
         except:
-            create_new_trial()
+            print "No Comment.txt Found"
         return
 
 
