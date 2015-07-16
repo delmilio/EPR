@@ -429,20 +429,23 @@ def update_bounds():
 def change_directory():
     # Open file selection box
     selected_dir = tkFileDialog.askdirectory()
-    app.trial = Trial(selected_dir)
-    app.trial.plot_data()
+    app.change_trial(selected_dir)
     return
 
 
 def open_trial():
     # Open file selection box
     selected_dir = tkFileDialog.askdirectory()
-    app.trial = Trial(selected_dir)
-    app.trial.plot_data()
+    app.change_trial(selected_dir)
     return
 
 
 def create_new_trial():
+    # Create dialog box and prevent user from clicking on main window until the comment window is closed
+    c = Toplevel()
+    c.transient(root)
+    c.grab_set()
+    root.wait_window(c)
     return
 
 
@@ -508,19 +511,23 @@ def multi_trial_stats():
     return
 
 
+class CommentWindow:
+
+    def __init__(self, master):
+        self.top = Toplevel(master)
+        self.master = master
+
+        # Create Widgets
+        self.sample_label = Label(self.master, text='Sample Name: ')
+        self.sample_label.grid(row=0, column=0)
+        self.sample_entry = Entry(self.master)
+        self.sample_entry.grid(row=0, column=1)
+        return
+
+
 class Application(Frame):
 
     def __init__(self, master):
-
-        # Create Trial (Defaults to parent directory of where the .py file is located)
-        program_directory = os.getcwd()
-        default_dir = os.path.dirname(program_directory)
-        self.trial = Trial(default_dir)
-        self.trial.plot_data()
-
-        frame = Frame(master)
-        frame.pack()
-
         # Create Main Frames
         self.leftFrame = Frame(master)
         self.leftFrame.pack(side=LEFT)
@@ -588,6 +595,20 @@ class Application(Frame):
         self.canvas = FigureCanvasTkAgg(self.trial_graph, master=self.topTrialFrame)
         plot_widget = self.canvas.get_tk_widget()
         plot_widget.pack()
+
+        # Create Trial (Defaults to parent directory of where the .py file is located)
+        self.trial = None
+        program_directory = os.getcwd()
+        default_dir = os.path.dirname(program_directory)
+        self.change_trial(default_dir)
+
+    def change_trial(self, trial_path):
+        try:
+            self.trial = Trial(trial_path)
+            self.trial.plot_data()
+        except:
+            create_new_trial()
+        return
 
 
 # Create Main Frame
