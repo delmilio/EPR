@@ -1,6 +1,6 @@
 from Tkinter import *
 from collections import defaultdict
-import os, datetime, time, numpy, shutil, tkFileDialog
+import os, datetime, time, numpy, shutil, tkFileDialog, copy
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -63,7 +63,7 @@ class TrialSummary():
         """
         return stats list normalized to 1mv sensitivity
         """
-        normalized_stats = self.stats_list
+        normalized_stats = copy.deepcopy(self.stats_list)
         for i in [0, 1, 6, 7]:
             normalized_stats[i] *= self.sensitivity
         return normalized_stats
