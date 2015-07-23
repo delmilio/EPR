@@ -433,15 +433,6 @@ def change_directory():
     return
 
 
-def open_trial():
-    # Open file selection box
-    print app.selected_dir
-    app.selected_dir = tkFileDialog.askdirectory()
-    print app.selected_dir
-    app.change_trial(app.selected_dir)
-    return
-
-
 def open_new_trial_window():
     # Create dialog box
     CommentWindow(root)
@@ -622,9 +613,6 @@ class Application(Frame):
 
         self.new_trial_btn = Button(self.leftFrame, text='Create New Trial', command=open_new_trial_window)
         self.new_trial_btn.grid(row=1, column=0)
-
-        self.open_trial_btn = Button(self.leftFrame, text='Open Trial', command=open_trial)
-        self.open_trial_btn.grid(row=2, column=0)
 
         self.multi_trial_averages_btn = Button(self.leftFrame, text='Multi Trial Statistics', command=multi_trial_stats)
         self.multi_trial_averages_btn.grid(row=3, column=0)
